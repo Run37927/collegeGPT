@@ -16,10 +16,8 @@ async function Navbar() {
             <MaxWidthWrapper>
                 <div className='flex h-14 items-center justify-between'>
                     <Link href='/' className='flex z-40 font-semibold text-lg'>
-                        <span>MyProduct</span>
+                        <span>CollegeGPT</span>
                     </Link>
-
-                    {/* TODO: add mobile navbar */}
 
                     <div className='hidden items-center space-x-1.5 sm:flex'>
                         <>
@@ -37,14 +35,6 @@ async function Navbar() {
                                     size: "sm",
                                 }), "cursor-pointer")}>
                                 <Sun className='h-4 w-4' />
-                            </div>
-
-                            <div
-                                className={cn(buttonVariants({
-                                    variant: "ghost",
-                                    size: "sm",
-                                }), "cursor-pointer")}>
-                                <Github className='h-4 w-4' />
                             </div>
 
                             {session?.user ? (
