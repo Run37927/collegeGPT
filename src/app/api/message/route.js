@@ -4,9 +4,11 @@ import { MessageArraySchema } from "@/lib/validators/message";
 
 export async function POST(req) {
     const { messages } = await req.json();
+    console.log('Received messages:', messages);
 
     const parsedMessages = MessageArraySchema.parse(messages);
 
+    console.log('Processing message...');
     const outboundMessages = parsedMessages.map((message) => ({
         role: message.isUserInput ? 'user' : 'system',
         content: message.text,
@@ -30,6 +32,7 @@ export async function POST(req) {
     }
 
     const stream = await OpenAIStream(payload)
+    console.log('Stream created, sending response');
 
     return new Response(stream)
 }
