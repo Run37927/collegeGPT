@@ -16,13 +16,23 @@ function ChatInput() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ messages: 'hello' })
+                body: JSON.stringify({ messages: [message] })
             })
 
             return response.body;
         },
-        onSuccess: () => {
-            console.log("Success: ", response);
+        onSuccess: async (stream) => {
+            if (!stream) throw new Error('No stream found');
+            const reader = stream.getReader();
+            const decoder = new TextDecoder();
+            let done = false;
+
+            while (!done) {
+                const { value, done: doneReading } = await reader.read()
+                done = doneReading;
+                const chunkValue = decoder.decode(value);
+                console.log(chunkValue);
+            }
         },
         onError: (error) => {
             console.error("Error: ", error);
