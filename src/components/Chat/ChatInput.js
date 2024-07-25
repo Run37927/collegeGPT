@@ -5,6 +5,7 @@ import TextareaAutosize from 'react-textarea-autosize'
 import { nanoid } from 'nanoid';
 import { useToast } from '../ui/use-toast';
 import { MessagesContext } from '@/context/messages';
+import { CornerDownLeft, Loader2 } from 'lucide-react';
 
 function ChatInput() {
     const [input, setInput] = useState('');
@@ -22,6 +23,8 @@ function ChatInput() {
                 },
                 body: JSON.stringify({ messages: [message] })
             })
+
+            if (!response.ok) throw new Error('Failed to send message');
 
             return response.body;
         },
@@ -61,13 +64,14 @@ function ChatInput() {
         onMutate(message) {
             addMessage(message);
         },
-        onError: (error) => {
-            console.error("Error: ", error);
+        onError: (_, message) => {
             toast({
                 variant: "destructive",
                 title: `Uh oh! Something went wrong.`,
                 description: `Please try again.`
             });
+            removeMessage(message.id);
+            textareaRef.current?.focus();
         },
     })
 
@@ -79,6 +83,7 @@ function ChatInput() {
                     rows={2}
                     maxRows={4}
                     autoFocus
+                    disabled={isPending}
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => {
@@ -99,6 +104,14 @@ function ChatInput() {
                     placeholder='ask anything...'
                     className='peer disabled:opacity-50 pr-14 resize-none block w-full border-0 bg-zinc-100 py-1.5 text-gray-900 focus:ring-0 text-sm sm:leading-6'
                 />
+
+                <div className="absolute inset-y-0 right-0 flex py-1.5 pr-1.5">
+                    <kbd className='inline-flex items-center rounded border bg-white border-gray-200 px-1 font-sans text-xs text-gray-400'>
+                        {isPending ? <Loader2 className='h-3 w-3 animate-spin' /> : <CornerDownLeft className='h-3 w-3' />}
+                    </kbd>
+                </div>
+
+                <div aria-hidden='true' className='absolute inset-x-0 bottom-0 border-t border-gray-300 peer-focus:border-t-2 peer-focus:border-blue-600' />
             </div>
         </div>
     )
