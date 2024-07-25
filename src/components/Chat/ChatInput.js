@@ -1,12 +1,16 @@
 'use client'
 import { useMutation } from '@tanstack/react-query';
-import React, { useState } from 'react'
+import React, { useContext, useRef, useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 import { nanoid } from 'nanoid';
 import { useToast } from '../ui/use-toast';
+import { MessagesContext } from '@/context/messages';
 
 function ChatInput() {
     const [input, setInput] = useState('');
+    const { messages, addMessage, removeMessage, updateMessage, setIsMessageUpdating } = useContext(MessagesContext);
+    const textareaRef = useRef(null);
+
     const { toast } = useToast();
 
     const { mutate: sendMessage, isPending } = useMutation({
@@ -23,6 +27,17 @@ function ChatInput() {
         },
         onSuccess: async (stream) => {
             if (!stream) throw new Error('No stream found');
+
+            const id = nanoid();
+            const responseMessage = {
+                id,
+                isUserInput: false,
+                text: '',
+            }
+
+            addMessage(responseMessage);
+            setIsMessageUpdating(true);
+
             const reader = stream.getReader();
             const decoder = new TextDecoder();
             let done = false;
@@ -31,8 +46,20 @@ function ChatInput() {
                 const { value, done: doneReading } = await reader.read()
                 done = doneReading;
                 const chunkValue = decoder.decode(value);
-                console.log(chunkValue);
+                // console.log(chunkValue);
+                updateMessage(id, (prev) => prev + chunkValue);
             }
+
+            // cleanup
+            setIsMessageUpdating(false);
+            setInput('');
+
+            setTimeout(() => {
+                textareaRef.current?.focus();
+            }, 10)
+        },
+        onMutate(message) {
+            addMessage(message);
         },
         onError: (error) => {
             console.error("Error: ", error);
@@ -48,6 +75,7 @@ function ChatInput() {
         <div className='border-t border-zinc-300 px-4'>
             <div className="relative mt-4 flex-1 overflow-hidden rounded-lg border-none outline-none">
                 <TextareaAutosize
+                    ref={textareaRef}
                     rows={2}
                     maxRows={4}
                     autoFocus
