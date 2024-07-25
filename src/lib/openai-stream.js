@@ -6,6 +6,7 @@ export async function OpenAIStream(payload) {
 
     let counter = 0;
 
+
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -14,6 +15,7 @@ export async function OpenAIStream(payload) {
         },
         body: JSON.stringify(payload),
     })
+
 
     const stream = new ReadableStream({
         async start(controller) {
@@ -37,6 +39,7 @@ export async function OpenAIStream(payload) {
 
                         counter++;
                     } catch (error) {
+                        console.error('Error parsing JSON:', error);
                         controller.error(error);
                     }
                 }
@@ -44,8 +47,15 @@ export async function OpenAIStream(payload) {
 
             const parser = createParser(onParse);
 
-            for await (const chunk of res.body) {
-                parser.feed(decoder.decode(chunk));
+            try {
+                for await (const chunk of res.body) {
+                    const decodedChunk = decoder.decode(chunk);
+                    console.log('Chunk received:', decodedChunk);
+                    parser.feed(decodedChunk);
+                }
+            } catch (error) {
+                console.error('Error reading response body:', error);
+                controller.error(error);
             }
         }
     })
