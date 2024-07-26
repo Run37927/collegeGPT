@@ -1,12 +1,11 @@
 import React from 'react'
 import Link from "next/link"
 import MaxWidthWrapper from "./MaxWidthWrapper"
-import { ArrowRight, Sun, Bell, Github } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { buttonVariants } from './ui/button'
 import { cn } from '@/lib/utils'
 import { getAuthSession } from '@/lib/auth'
 import UserAccountNav from './UserAccountNav'
-import Image from 'next/image'
 
 async function Navbar() {
     const session = await getAuthSession();
@@ -16,7 +15,7 @@ async function Navbar() {
             <MaxWidthWrapper>
                 <div className='flex h-14 items-center justify-between'>
                     <Link href='/' className='flex z-40 font-semibold text-lg'>
-                        <span>CollegeGPT</span>
+                        <span>Your College</span>
                     </Link>
 
                     <div className='hidden items-center space-x-1.5 sm:flex'>
@@ -26,7 +25,7 @@ async function Navbar() {
                                     variant: "ghost",
                                     size: "sm",
                                 }), "cursor-pointer")}>
-                                <Bell className='h-4 w-4' />
+                                About Us
                             </div>
 
                             <div
@@ -34,13 +33,21 @@ async function Navbar() {
                                     variant: "ghost",
                                     size: "sm",
                                 }), "cursor-pointer")}>
-                                <Sun className='h-4 w-4' />
+                                Programs
+                            </div>
+
+                            <div
+                                className={cn(buttonVariants({
+                                    variant: "ghost",
+                                    size: "sm",
+                                }), "cursor-pointer")}>
+                                Contact
                             </div>
 
                             {session?.user ? (
                                 <UserAccountNav session={session} />
                             ) : (
-                                <Link href='/sign-in' className={cn(buttonVariants({ size: "sm" }), "flex items-center justify-center group px-4")}>
+                                <Link href='#' className={cn(buttonVariants({ size: "sm" }), "flex items-center justify-center group px-4")}>
                                     <span>Sign in</span>
                                     <ArrowRight className='ml-1.5 transform h-4 w-4 transition-transform duration-300 group-hover:translate-x-1' />
                                 </Link>
