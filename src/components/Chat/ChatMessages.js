@@ -4,8 +4,19 @@ import { cn } from '@/lib/utils';
 import React, { useContext } from 'react'
 import MarkdownLite from '../MarkdownLite';
 
+function LoadingBubble() {
+    return (
+        <div className="flex items-center space-x-2 bg-gray-200 text-gray-900 px-4 py-2 rounded-lg max-w-xs">
+            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+        </div>
+    );
+}
+
+
 function ChatMessages() {
-    const { messages } = useContext(MessagesContext);
+    const { messages, isMessageUpdating } = useContext(MessagesContext);
     const inverseMessages = [...messages].reverse();
 
     return (
